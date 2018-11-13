@@ -1,4 +1,4 @@
-package com.example.jslocal.fraunehofer_pong;
+package com.example.jslocal.fraunenhofer_pong;
 
 import org.junit.Test;
 

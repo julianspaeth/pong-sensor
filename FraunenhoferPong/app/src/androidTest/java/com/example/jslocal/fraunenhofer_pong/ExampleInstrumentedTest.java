@@ -1,4 +1,4 @@
-package com.example.jslocal.fraunehofer_pong;
+package com.example.jslocal.fraunenhofer_pong;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.jslocal.fraunehofer_pong", appContext.getPackageName());
+        assertEquals("com.example.jslocal.fraunenhofer_pong", appContext.getPackageName());
     }
 }
