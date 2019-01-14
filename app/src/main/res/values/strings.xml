@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Pong Sensor Game</string>
 
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="button_scan">Find Sensors</string>
+    <string name="title">Pong</string>
+    <string name="subtitle">A Movement Game</string>
+    <string name="description_image_pong">Pong Image</string>
 </resources>
