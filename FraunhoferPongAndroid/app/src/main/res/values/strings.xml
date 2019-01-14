@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">Fraunhofer-Pong-Android</string>
-
-    <string name="title">PONG</string>
-    <string name="scan_button">SCAN FOR SENSORS</string>
-    <string name="calibration">PLEASE SIT STILL. CALIBRATION RUNS.</string>
-    <string name="info">Scan for reachable sensors to start the game.</string>
-</resources>
