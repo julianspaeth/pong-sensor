@@ -7,7 +7,7 @@ public class Bar {
     // RectF is an object that holds four coordinates - just what we need
     private RectF rect;
 
-    // How long and high our bar will be
+    // How long and high our barPlayer will be
     private float length;
     private float height;
 
@@ -36,14 +36,10 @@ public class Bar {
     // This is the constructor method
     // When we create an object from this class we will pass
     // in the screen width and height
-    public Bar(int x, int y) {
+    public Bar(int x, int y, String position) {
 
         screenX = x;
         screenY = y;
-
-        System.out.println("Bar:");
-        System.out.println(screenX);
-        System.out.println(screenY);
 
         // 1/6 screen width wide
         length = screenX/6f;
@@ -51,11 +47,20 @@ public class Bar {
         // 1/25 screen height high
         height = screenY/40f;
 
-        // Start bar in roughly the sceen centre
-        coordX = screenX/2f;
-        coordY = screenY-50;
 
-        rect = new RectF(coordX, coordY, coordX + length, coordY - height);
+
+        if (position.equals("bottom")) {
+            // Start barPlayer
+            coordX = screenX/2f;
+            coordY = screenY-100;
+            rect = new RectF(coordX, coordY, coordX + length, coordY + height);
+        }
+        if (position.equals("top")) {
+            // Start computerPlayer
+            coordX = screenX/2f;
+            coordY = 100;
+            rect = new RectF(coordX, coordY, coordX + length, coordY + height);
+        }
 
         // How fast is the bat in pixels per second
         speed = screenX;
@@ -97,6 +102,7 @@ public class Bar {
         // Update the Bat graphics
         rect.left = coordX;
         rect.right = coordX + length;
+
     }
 
 }

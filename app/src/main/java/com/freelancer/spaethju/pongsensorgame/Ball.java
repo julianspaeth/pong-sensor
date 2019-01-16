@@ -12,9 +12,7 @@ public class Ball {
     private float height;
 
     public Ball(int screenX, int screenY){
-        System.out.println("Ball:");
-        System.out.println(screenX);
-        System.out.println(screenY);
+
         // Make the ball size relative to the screen resolution
         width = screenX/50f;
         height = width;

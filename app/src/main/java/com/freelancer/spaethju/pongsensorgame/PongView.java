@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -46,8 +47,9 @@ class PongView extends SurfaceView implements Runnable{
     int screenX;
     int screenY;
 
-    // The players bat
-    Bar bar;
+    // The bar
+    Bar barPlayer;
+    Bar barComputer;
 
     // A ball
     Ball ball;
@@ -61,10 +63,8 @@ class PongView extends SurfaceView implements Runnable{
     int explodeID = -1;
 
     // The score
-    int score = 0;
-
-    // Lives
-    int lives = 3;
+    int score_player = 0;
+    int score_computer = 0;
 
     public PongView(Context context, int x, int y) {
 
@@ -78,16 +78,14 @@ class PongView extends SurfaceView implements Runnable{
         screenX = x;
         screenY = y;
 
-        System.out.println("Pong View");
-        System.out.println(screenX);
-        System.out.println(screenY);
 
         // Initialize sur and paint objects
         surfaceHolder = getHolder();
         paint = new Paint();
 
         // A new bat
-        bar = new Bar(screenX, screenY);
+        barPlayer = new Bar(screenX, screenY, "bottom");
+        barComputer = new Bar(screenX, screenY, "top");
 
         // Create a ball
         ball = new Ball(screenX, screenY);
@@ -147,15 +145,13 @@ class PongView extends SurfaceView implements Runnable{
     public void setupAndRestart(){
 
         // Put the mBall back to the start
-        ball.reset(screenX, screenY);
-
+        ball.reset(screenX/2, screenY/2);
         // if game over reset scores and mLives
-        if(lives == 0) {
-            score = 0;
-            lives = 3;
-        }
+        score_computer = 0;
+        score_player = 0;
 
     }
+
 
     //Code the overridden run method.
     @Override
@@ -165,7 +161,6 @@ class PongView extends SurfaceView implements Runnable{
             // Capture the current time in milliseconds in startFrameTime
             long startFrameTime = System.currentTimeMillis();
 
-            // Update the frame
             // Update the frame
             if(!paused){
                 update();
@@ -191,46 +186,42 @@ class PongView extends SurfaceView implements Runnable{
     // Everything that needs to be updated goes in here
     // Movement, collision detection etc.
     public void update(){
-        // Move the bar if required
-        bar.update(fps);
-        ball.update(fps);
 
-        //Check for bar colliding with bar
-        if(RectF.intersects(bar.getRect(), ball.getRect())) {
+        //Check for bar colliding with barPlayer
+        if(RectF.intersects(barPlayer.getRect(), ball.getRect())) {
+
             ball.setRandomXVelocity();
             ball.reverseYVelocity();
-            ball.clearObstacleY(bar.getRect().top - 2);
+            ball.clearObstacleY(barPlayer.getRect().top - 2);
 
-            score++;
             ball.increaseVelocity();
 
             sp.play(beep1ID, 1, 1, 0, 0, 1);
         }
 
-        // Bounce the mBall back when it hits the bottom of screen
+        // Reset the ball when it hits the bottom of screen
         if(ball.getRect().bottom > screenY){
-            ball.reverseYVelocity();
-            ball.clearObstacleY(screenY - 2);
+            score_computer++;
 
-            // Lose a life
-            lives--;
+            ball.reset(screenX/2, screenY/2);
             sp.play(loseLifeID, 1, 1, 0, 0, 1);
-
-            if(lives == 0){
-                paused = true;
-                setupAndRestart();
-            }
         }
 
-        // Bounce the mBall back when it hits the top of screen
+        // Move the barPlayer if required
+        barPlayer.update(fps);
+        ball.update(fps);
+
+
+        // Reset the ball when it hits the top of screen
         if(ball.getRect().top < 0){
-            ball.reverseYVelocity();
-            ball.clearObstacleY(12);
+            score_player++;
 
-            sp.play(beep2ID, 1, 1, 0, 0, 1);
+            ball.reset(screenX/2, screenY/2);
+            ball.reverseYVelocity();
+            sp.play(beep3ID, 1, 1, 0, 0, 1);
         }
 
-        // If the mBall hits left wall bounce
+        // If the ball hits left wall bounce
         if(ball.getRect().left < 0){
             ball.reverseXVelocity();
             ball.clearObstacleX(2);
@@ -238,7 +229,7 @@ class PongView extends SurfaceView implements Runnable{
             sp.play(beep3ID, 1, 1, 0, 0, 1);
         }
 
-        // If the mBall hits right wall bounce
+        // If the ball hits right wall bounce
         if(ball.getRect().right > screenX){
             ball.reverseXVelocity();
             ball.clearObstacleX(screenX - 22);
@@ -262,21 +253,28 @@ class PongView extends SurfaceView implements Runnable{
             canvas.drawColor(Color.parseColor("#080705"));
 
             // Choose the brush color for drawing
+            paint.setColor(Color.parseColor("#912F40"));
+            // Draw the bars
+            canvas.drawRect(barPlayer.getRect(), paint);
             paint.setColor(Color.parseColor("#FFFFFA"));
+            canvas.drawRect(barComputer.getRect(), paint);
 
-            // Draw the mBat
-            canvas.drawRect(bar.getRect(), paint);
-
-            // Draw the mBall
+            paint.setColor(Color.parseColor("#FFFFFA"));
+            // Draw the ball
             canvas.drawRect(ball.getRect(), paint);
 
 
             // Change the drawing color to white
             paint.setColor(Color.argb(255, 255, 255, 255));
 
+            canvas.drawLine(0, screenY/2, screenX, screenY/2, paint);
             // Draw the mScore
-            paint.setTextSize(40);
-            canvas.drawText("Score: " + score + "   Lives: " + lives, 10, 50, paint);
+            paint.setTextSize(70);
+
+
+            canvas.drawText(Integer.toString(score_computer), screenX - screenX/10, screenY/2 - screenY/25, paint);
+            paint.setColor(Color.parseColor("#912F40"));
+            canvas.drawText(Integer.toString(score_player), screenX - screenX/10, screenY/2 + screenY/25, paint);
 
             // Draw everything to the screen
             surfaceHolder.unlockCanvasAndPost(canvas);
@@ -318,10 +316,10 @@ class PongView extends SurfaceView implements Runnable{
 
                 // Is the touch on the right or left?
                 if(motionEvent.getX() > screenX / 2){
-                    bar.setMovementState(bar.RIGHT);
+                    barPlayer.setMovementState(barPlayer.RIGHT);
                 }
                 else{
-                    bar.setMovementState(bar.LEFT);
+                    barPlayer.setMovementState(barPlayer.LEFT);
                 }
 
                 break;
@@ -329,7 +327,7 @@ class PongView extends SurfaceView implements Runnable{
             // Player has removed finger from screen
             case MotionEvent.ACTION_UP:
 
-                bar.setMovementState(bar.STOPPED);
+                barPlayer.setMovementState(barPlayer.STOPPED);
                 break;
         }
         return true;
