@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Pong Sensor Game</string>
 
-    <string name="button_scan">Find Sensors</string>
+    <string name="button_play">Play!</string>
     <string name="title">Pong</string>
     <string name="subtitle">A Movement Game</string>
     <string name="description_image_pong">Pong Image</string>
