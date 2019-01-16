@@ -86,6 +86,7 @@ class PongView extends SurfaceView implements Runnable{
         // A new bat
         barPlayer = new Bar(screenX, screenY, "bottom");
         barComputer = new Bar(screenX, screenY, "top");
+        barComputer.setMovementState(barComputer.LEFT);
 
         // Create a ball
         ball = new Ball(screenX, screenY);
@@ -194,10 +195,20 @@ class PongView extends SurfaceView implements Runnable{
             ball.reverseYVelocity();
             ball.clearObstacleY(barPlayer.getRect().top - 2);
 
-            ball.increaseVelocity();
+            sp.play(beep1ID, 1, 1, 0, 0, 1);
+        }
+
+        //Check for bar colliding with barComputer
+        if(RectF.intersects(barComputer.getRect(), ball.getRect())) {
+
+            ball.setRandomXVelocity();
+            ball.reverseYVelocity();
+            ball.clearObstacleY(barComputer.getRect().top + 2);
 
             sp.play(beep1ID, 1, 1, 0, 0, 1);
         }
+
+
 
         // Reset the ball when it hits the bottom of screen
         if(ball.getRect().bottom > screenY){
@@ -207,8 +218,19 @@ class PongView extends SurfaceView implements Runnable{
             sp.play(loseLifeID, 1, 1, 0, 0, 1);
         }
 
+        if (barComputer.getRect().centerX() < 50) {
+            barComputer.setMovementState(barComputer.RIGHT);
+        }
+
+        if (barComputer.getRect().centerX() > screenX - 50) {
+            barComputer.setMovementState(barComputer.LEFT);
+        }
+
+
+
         // Move the barPlayer if required
         barPlayer.update(fps);
+        barComputer.update(fps);
         ball.update(fps);
 
 
@@ -267,7 +289,7 @@ class PongView extends SurfaceView implements Runnable{
             // Change the drawing color to white
             paint.setColor(Color.argb(255, 255, 255, 255));
 
-            canvas.drawLine(0, screenY/2, screenX, screenY/2, paint);
+            canvas.drawLine(0, screenY/2-10, screenX, screenY/2-10, paint);
             // Draw the mScore
             paint.setTextSize(70);
 

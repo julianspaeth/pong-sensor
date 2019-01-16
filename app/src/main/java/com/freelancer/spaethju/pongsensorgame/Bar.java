@@ -52,7 +52,7 @@ public class Bar {
         if (position.equals("bottom")) {
             // Start barPlayer
             coordX = screenX/2f;
-            coordY = screenY-100;
+            coordY = screenY-200;
             rect = new RectF(coordX, coordY, coordX + length, coordY + height);
         }
         if (position.equals("top")) {
