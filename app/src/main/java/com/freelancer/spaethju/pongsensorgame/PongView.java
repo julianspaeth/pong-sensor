@@ -6,7 +6,6 @@ import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -18,6 +17,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+
+import static java.lang.StrictMath.abs;
 
 class PongView extends SurfaceView implements Runnable{
 
@@ -218,20 +219,29 @@ class PongView extends SurfaceView implements Runnable{
             sp.play(loseLifeID, 1, 1, 0, 0, 1);
         }
 
-        if (barComputer.getRect().centerX() < 50) {
-            barComputer.setMovementState(barComputer.RIGHT);
-        }
-
-        if (barComputer.getRect().centerX() > screenX - 50) {
-            barComputer.setMovementState(barComputer.LEFT);
-        }
-
-
 
         // Move the barPlayer if required
         barPlayer.update(fps);
-        barComputer.update(fps);
         ball.update(fps);
+
+        // Move computer if required
+        // do nothing if ball goes into other direction
+
+        if (ball.getVeloY() >= 0) {
+            barComputer.setMovementState(barComputer.STOPPED);
+        } else {
+            // Move when it goes into the computer direction
+            if (ball.getRect().centerX() < barComputer.getRect().centerX()){
+                barComputer.setMovementState(barComputer.LEFT);
+            }
+            else if (ball.getRect().centerX() > barComputer.getRect().centerX()){
+                barComputer.setMovementState(barComputer.RIGHT);
+            } else if (abs(ball.getRect().centerX()-barComputer.getRect().centerX()) < 10) {
+                barComputer.setMovementState(barComputer.STOPPED);
+            }
+        }
+
+        barComputer.update(fps);
 
 
         // Reset the ball when it hits the top of screen

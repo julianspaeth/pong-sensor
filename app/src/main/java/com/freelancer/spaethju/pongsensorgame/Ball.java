@@ -87,4 +87,8 @@ public class Ball {
         rect.right = x / 2 + width;
         rect.bottom = y - 20 - height;
     }
+
+    public float getVeloY() {
+        return veloY;
+    }
 }
