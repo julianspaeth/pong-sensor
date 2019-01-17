@@ -93,10 +93,10 @@ public class Bar {
         }
 
         // Make sure it's not leaving screen
-        if(rect.left < 0){ coordX = 0; } if(rect.right > screenX){
+        if(rect.left < 5){ coordX = 0; } if(rect.right-5 > screenX){
             coordX = screenX -
                     // The width of the Bat
-                    (rect.right - rect.left);
+                    (rect.right - rect.left + 10);
         }
 
         // Update the Bat graphics

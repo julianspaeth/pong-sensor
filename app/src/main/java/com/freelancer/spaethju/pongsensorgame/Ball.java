@@ -10,6 +10,8 @@ public class Ball {
     private float veloY;
     private float width;
     private float height;
+    private float screenX;
+    private float screenY;
 
     public Ball(int screenX, int screenY){
 
@@ -26,6 +28,9 @@ public class Ball {
 
         // Initialize the Rect that represents the ball
         rect = new RectF();
+
+        this.screenX = screenX;
+        this.screenY = screenY;
 
     }
 
@@ -67,8 +72,8 @@ public class Ball {
     // A score of over 20 is quite difficult
     // Reduce or increase 10 to make this easier or harder
     public void increaseVelocity(){
-        veloX = veloX + veloX / 10;
-        veloY = veloY + veloY / 10;
+        veloX = veloX + veloX / 50;
+        veloY = veloY + veloY / 50;
     }
 
     public void clearObstacleY(float y){
@@ -88,7 +93,19 @@ public class Ball {
         rect.bottom = y - 20 - height;
     }
 
+    public float getVeloX() {
+        return veloX;
+    }
+
     public float getVeloY() {
         return veloY;
+    }
+
+    public void setVeloX(float veloX) {
+        this.veloX = veloX;
+    }
+
+    public void setVeloY(float veloY) {
+        this.veloY = veloY;
     }
 }

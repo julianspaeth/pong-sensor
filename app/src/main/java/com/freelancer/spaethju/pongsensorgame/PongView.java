@@ -18,9 +18,12 @@ import android.view.SurfaceView;
 
 import java.io.IOException;
 
-import static java.lang.StrictMath.abs;
+import static java.lang.Math.abs;
 
 class PongView extends SurfaceView implements Runnable{
+
+    float predX;
+    boolean moveComputer = false;
 
     // This is our thread
     Thread gameThread = null;
@@ -87,7 +90,6 @@ class PongView extends SurfaceView implements Runnable{
         // A new bat
         barPlayer = new Bar(screenX, screenY, "bottom");
         barComputer = new Bar(screenX, screenY, "top");
-        barComputer.setMovementState(barComputer.LEFT);
 
         // Create a ball
         ball = new Ball(screenX, screenY);
@@ -197,6 +199,10 @@ class PongView extends SurfaceView implements Runnable{
             ball.clearObstacleY(barPlayer.getRect().top - 2);
 
             sp.play(beep1ID, 1, 1, 0, 0, 1);
+
+            predX = predict();
+            moveComputer = true;
+
         }
 
         //Check for bar colliding with barComputer
@@ -204,9 +210,11 @@ class PongView extends SurfaceView implements Runnable{
 
             ball.setRandomXVelocity();
             ball.reverseYVelocity();
-            ball.clearObstacleY(barComputer.getRect().top + 2);
+            ball.clearObstacleY(barComputer.getRect().bottom + 2);
 
             sp.play(beep1ID, 1, 1, 0, 0, 1);
+            moveComputer = false;
+            barComputer.setMovementState(barComputer.STOPPED);
         }
 
 
@@ -216,41 +224,52 @@ class PongView extends SurfaceView implements Runnable{
             score_computer++;
 
             ball.reset(screenX/2, screenY/2);
+            moveComputer = false;
+            barComputer.setMovementState(barComputer.STOPPED);
             sp.play(loseLifeID, 1, 1, 0, 0, 1);
         }
 
-
-        // Move the barPlayer if required
-        barPlayer.update(fps);
-        ball.update(fps);
-
-        // Move computer if required
-        // do nothing if ball goes into other direction
-
-        if (ball.getVeloY() >= 0) {
-            barComputer.setMovementState(barComputer.STOPPED);
-        } else {
+        if (abs(barComputer.getRect().centerX() - predX)>20 && moveComputer) {
             // Move when it goes into the computer direction
-            if (ball.getRect().centerX() < barComputer.getRect().centerX()){
+            if (predX < barComputer.getRect().centerX()+10){
                 barComputer.setMovementState(barComputer.LEFT);
             }
-            else if (ball.getRect().centerX() > barComputer.getRect().centerX()){
+            if (predX > barComputer.getRect().centerX()-10){
                 barComputer.setMovementState(barComputer.RIGHT);
-            } else if (abs(ball.getRect().centerX()-barComputer.getRect().centerX()) < 10) {
-                barComputer.setMovementState(barComputer.STOPPED);
             }
+        } else {
+            barComputer.setMovementState(barComputer.STOPPED);
         }
 
-        barComputer.update(fps);
+
+        // Move computer if required (simple Intelligence)
+        // do nothing if ball goes into other direction
+
+//        if (ball.getVeloY() >= 0) {
+//            barComputer.setMovementState(barComputer.STOPPED);
+//        } else {
+//            // Move when it goes into the computer direction
+//            if (ball.getRect().centerX() < barComputer.getRect().centerX()+10){
+//                barComputer.setMovementState(barComputer.LEFT);
+//            }
+//            if (ball.getRect().centerX() > barComputer.getRect().centerX()-10){
+//                barComputer.setMovementState(barComputer.RIGHT);
+//            }
+//            if (abs(ball.getRect().centerX()-barComputer.getRect().centerX()) < 10) {
+//                barComputer.setMovementState(barComputer.STOPPED);
+//            }
+//        }
 
 
         // Reset the ball when it hits the top of screen
         if(ball.getRect().top < 0){
             score_player++;
-
             ball.reset(screenX/2, screenY/2);
             ball.reverseYVelocity();
             sp.play(beep3ID, 1, 1, 0, 0, 1);
+            ball.increaseVelocity();
+            moveComputer = false;
+            barComputer.setMovementState(barComputer.STOPPED);
         }
 
         // If the ball hits left wall bounce
@@ -268,6 +287,41 @@ class PongView extends SurfaceView implements Runnable{
 
             sp.play(beep3ID, 1, 1, 0, 0, 1);
         }
+
+        // Move the barPlayer if required
+        barPlayer.update(fps);
+        ball.update(fps);
+        barComputer.update(fps);
+    }
+
+    // Everything that needs to be updated goes in here
+    // Movement, collision detection etc.
+    public float predict(){
+        System.out.println("Predict ball");
+        Ball prediction_ball = new Ball(screenX, screenY);
+        prediction_ball.getRect().set(ball.getRect());
+        prediction_ball.setVeloX(ball.getVeloX());
+        prediction_ball.setVeloY(ball.getVeloY());
+
+        while (prediction_ball.getRect().top > 200) {
+            // If the ball hits left wall bounce
+            if(prediction_ball.getRect().left < 0){
+                prediction_ball.reverseXVelocity();
+                prediction_ball.clearObstacleX(2);
+            }
+
+            // If the ball hits right wall bounce
+            if(prediction_ball.getRect().right > screenX){
+                prediction_ball.reverseXVelocity();
+                prediction_ball.clearObstacleX(screenX - 22);
+            }
+            prediction_ball.update(fps);
+        }
+
+        float predX = prediction_ball.getRect().centerX();
+
+        return predX;
+
     }
 
     //Draw the newly updated scene
