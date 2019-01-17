@@ -17,6 +17,8 @@ public class Bar {
     // Y is the top coordinate
     private float coordY;
 
+    private float initX, initY;
+
     // This will hold the pixels per second speed that
     // the bat will move
     private float speed;
@@ -42,7 +44,7 @@ public class Bar {
         screenY = y;
 
         // 1/6 screen width wide
-        length = screenX/6f;
+        length = screenX/8f;
 
         // 1/25 screen height high
         height = screenY/40f;
@@ -52,19 +54,26 @@ public class Bar {
         if (position.equals("bottom")) {
             // Start barPlayer
             coordX = screenX/2f;
-            coordY = screenY-200;
+            coordY = screenY - 150;
             rect = new RectF(coordX, coordY, coordX + length, coordY + height);
         }
         if (position.equals("top")) {
             // Start computerPlayer
             coordX = screenX/2f;
             coordY = 100;
-            rect = new RectF(coordX, coordY, coordX + length, coordY + height);
+            rect = new RectF(coordX, coordY-height, coordX + length, coordY);
         }
+
+        initX = coordX;
+        initY = coordY;
 
         // How fast is the bat in pixels per second
         speed = screenX;
         // Cover entire screen in 1 second
+    }
+
+    public void reset() {
+        rect = new RectF(initX, initY-height, initX + length, initY);
     }
 
     // This is a getter method to make the rectangle that
@@ -105,4 +114,11 @@ public class Bar {
 
     }
 
+    public float getCoordX() {
+        return coordX;
+    }
+
+    public float getCoordY() {
+        return coordY;
+    }
 }
