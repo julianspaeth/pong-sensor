@@ -2,7 +2,14 @@
     <string name="app_name">Pong Sensor Game</string>
 
     <string name="button_play">Play!</string>
+    <string name="button_start">Start</string>
     <string name="title">Pong</string>
     <string name="subtitle">A Movement Game</string>
     <string name="description_image_pong">Pong Image</string>
+    <string name="connect_device">Connect to Device</string>
+    <string name="mac_address">MAC Address:</string>
+    <string name="button_connect">Connect</string>
+    <string name="mac_hint">Enter MAC address of device</string>
+    <string name="connected">Connected to</string>
+    <string name="mac">E4:76:E9:AF:B5:B5</string>
 </resources>

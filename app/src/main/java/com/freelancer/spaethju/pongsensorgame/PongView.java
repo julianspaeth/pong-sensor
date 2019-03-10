@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.media.SoundPool;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -14,53 +15,56 @@ import static java.lang.Math.abs;
 
 class PongView extends SurfaceView implements Runnable{
 
-    float predX;
-    boolean moveComputer = false;
+    private float predX;
+    private boolean moveComputer = false;
 
     // This is our thread
-    Thread gameThread = null;
+    private Thread gameThread = null;
 
     // We need a SurfaceHolder object
     // We will see it in action in the draw method soon.
-    SurfaceHolder surfaceHolder;
+    private SurfaceHolder surfaceHolder;
 
     // A boolean which we will set and unset
     // when the game is running- or not
     // It is volatile because it is accessed from inside and outside the thread
-    volatile boolean playing;
+    private volatile boolean playing;
 
     // Game is paused at the start
-    boolean paused = true;
+    private boolean paused = true;
 
     // A Canvas and a Paint object
-    Canvas canvas;
-    Paint paint;
+    private Canvas canvas;
+    private Paint paint;
 
     // This variable tracks the game frame rate
-    long fps;
+    private long fps;
 
     // The size of the screen in pixels
-    int screenX;
-    int screenY;
+    private int screenX;
+    private int screenY;
 
     // The bar
-    Bar barPlayer;
-    Bar barComputer;
+    private Bar barPlayer;
+    private Bar barComputer;
 
     // A ball
-    Ball ball;
+    private Ball ball;
 
     // For sound FX
-//    SoundPool sp;
-//    int beep1ID = -1;
-//    int beep2ID = -1;
-//    int beep3ID = -1;
-//    int loseLifeID = -1;
-//    int explodeID = -1;
+    private SoundPool sp;
+    private int beep1ID = -1;
+    private int beep2ID = -1;
+    private int beep3ID = -1;
+    private int loseLifeID = -1;
+    private int explodeID = -1;
 
     // The score
-    int score_player = 0;
-    int score_computer = 0;
+    private int score_player = 0;
+    private int score_computer = 0;
+
+    private static final String TAG = "Pong View";
+
 
     public PongView(Context context, int x, int y) {
 
@@ -140,6 +144,7 @@ class PongView extends SurfaceView implements Runnable{
 
     public void setupAndRestart(){
 
+        Log.i(TAG, "Restart");
         // Put the mBall back to the start
         reset();
         // if game over reset scores and mLives
@@ -149,6 +154,7 @@ class PongView extends SurfaceView implements Runnable{
     }
 
     public void reset(){
+        Log.i(TAG, "Reset");
         ball.reset(screenX/2, screenY/2+10);
         barComputer.reset();
         barPlayer.reset();
@@ -350,6 +356,7 @@ class PongView extends SurfaceView implements Runnable{
     // If the Activity is paused/stopped
     // shutdown our thread.
     public void pause() {
+        Log.i(TAG, "Pause");
         playing = false;
         try {
             gameThread.join();
@@ -362,13 +369,14 @@ class PongView extends SurfaceView implements Runnable{
     // If the Activity starts/restarts
     // start our thread.
     public void resume() {
+        Log.i(TAG, "Resume");
         playing = true;
         gameThread = new Thread(this);
         gameThread.start();
     }
 
     // The SurfaceView class implements onTouchListener
-// So we can override this method and detect screen touches.
+    // So we can override this method and detect screen touches.
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
 

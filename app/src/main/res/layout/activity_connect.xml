@@ -6,35 +6,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".MainActivity">
+    tools:context=".ConnectActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-
-    <ImageView
-        android:id="@+id/image_pong"
-        android:layout_width="wrap_content"
-        android:layout_height="136dp"
-        android:layout_marginTop="296dp"
-        android:contentDescription="@string/description_image_pong"
-        android:paddingLeft="50dp"
-        android:paddingRight="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/pong" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
 
         <Button
-            android:id="@+id/button_start"
+            android:id="@+id/button_play"
             style="?metaButtonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,14 +29,14 @@
             android:layout_marginTop="504dp"
             android:layout_marginEnd="128dp"
             android:background="@color/red_dark"
+            android:textColor="@color/white"
+            android:onClick="play"
             android:enabled="true"
-            android:onClick="start"
             android:padding="15dp"
-            android:text="@string/button_start"
+            android:text="@string/button_play"
             android:textSize="25sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.413"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
@@ -59,16 +46,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="55dp"
-            android:layout_marginTop="167dp"
+            android:layout_marginTop="260dp"
             android:layout_marginEnd="55dp"
             android:fontFamily="casual"
             android:gravity="center"
             android:keepScreenOn="true"
-            android:text="@string/subtitle"
+            android:text="@string/mac_address"
             android:textColor="@color/white"
             android:textSize="35sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.571"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/mac_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="55dp"
+            android:layout_marginTop="344dp"
+            android:layout_marginEnd="55dp"
+            android:fontFamily="casual"
+            android:gravity="center"
+            android:keepScreenOn="true"
+            android:textColor="@color/white"
+            android:textSize="35sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.573"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -82,7 +86,7 @@
             android:fontFamily="casual"
             android:gravity="center"
             android:keepScreenOn="true"
-            android:text="@string/title"
+            android:text="@string/connected"
             android:textColor="@color/white"
             android:textSize="50sp"
             android:textStyle="bold"

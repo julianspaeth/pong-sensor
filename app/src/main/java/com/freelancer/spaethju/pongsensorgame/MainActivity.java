@@ -2,13 +2,13 @@ package com.freelancer.spaethju.pongsensorgame;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
     private boolean mVisible;
+    private static final String TAG = "MAIN";
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
@@ -93,34 +94,21 @@ public class MainActivity extends AppCompatActivity {
 
         mVisible = true;
 
-        //mControlsView = findViewById(R.id.fullscreen_content_controls);
-        //mContentView = findViewById(R.id.fullscreen_content);
+        Log.i(TAG, "App started.");
 
-
-        // Set up the user interaction to manually show or hide the system UI.
-//        mContentView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClickButton button = (Button) findViewById(R.id.button_send);
-//button.setOnClickListener(new View.OnClickListener() {
-//    public void onClick(View v) {
-//        // Do something in response to button click
-//    }
-//});(View view) {
-//                toggle();
-//            }
-//        });
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
-    /** Called when the user taps the Send button */
-    public void play(View view) {
-        System.out.println("Play Button pressed");
-        Intent intent = new Intent(this, PlayActivity.class);
-        startActivity(intent);
+    public void main(View view) {
+        setContentView(R.layout.activity_main);
+        mVisible = true;
+    }
+
+
+    /** Called when the user taps the Start button */
+    public void start(View view) {
+        Log.i(TAG, "Start button pressed");
+        Intent startIntent = new Intent(this, StartActivity.class);
+        startActivity(startIntent);
     }
 
     @Override

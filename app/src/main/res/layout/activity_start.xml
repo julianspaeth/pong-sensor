@@ -6,35 +6,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".MainActivity">
+    tools:context=".StartActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-
-    <ImageView
-        android:id="@+id/image_pong"
-        android:layout_width="wrap_content"
-        android:layout_height="136dp"
-        android:layout_marginTop="296dp"
-        android:contentDescription="@string/description_image_pong"
-        android:paddingLeft="50dp"
-        android:paddingRight="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/pong" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
 
         <Button
-            android:id="@+id/button_start"
+            android:id="@+id/button_connect"
             style="?metaButtonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,14 +29,14 @@
             android:layout_marginTop="504dp"
             android:layout_marginEnd="128dp"
             android:background="@color/red_dark"
+            android:textColor="@color/white"
+            android:onClick="connect"
             android:enabled="true"
-            android:onClick="start"
             android:padding="15dp"
-            android:text="@string/button_start"
+            android:text="@string/button_connect"
             android:textSize="25sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.413"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
@@ -59,18 +46,47 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="55dp"
-            android:layout_marginTop="167dp"
+            android:layout_marginTop="260dp"
             android:layout_marginEnd="55dp"
             android:fontFamily="casual"
             android:gravity="center"
             android:keepScreenOn="true"
-            android:text="@string/subtitle"
+            android:text="@string/mac_address"
             android:textColor="@color/white"
             android:textSize="35sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.571"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/macInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_margin="20dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/macInput"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="10dp"
+                android:background="@color/white"
+                android:hint="@string/mac_hint"
+                android:singleLine="true"
+                android:text="@string/mac"
+                android:textAlignment="viewStart"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent" />
+        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:id="@+id/title"
@@ -82,7 +98,7 @@
             android:fontFamily="casual"
             android:gravity="center"
             android:keepScreenOn="true"
-            android:text="@string/title"
+            android:text="@string/connect_device"
             android:textColor="@color/white"
             android:textSize="50sp"
             android:textStyle="bold"
