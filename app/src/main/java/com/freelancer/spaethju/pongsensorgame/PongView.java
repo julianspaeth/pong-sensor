@@ -1,15 +1,22 @@
 package com.freelancer.spaethju.pongsensorgame;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.io.IOException;
 
 import static java.lang.Math.abs;
 
@@ -96,47 +103,47 @@ class PongView extends SurfaceView implements Runnable{
         of Android is present
     */
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-//                    .setUsage(AudioAttributes.USAGE_MEDIA)
-//                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-//                    .build();
-//
-//            sp = new SoundPool.Builder()
-//                    .setMaxStreams(5)
-//                    .setAudioAttributes(audioAttributes)
-//                    .build();
-//
-//        } else {
-//            sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            sp = new SoundPool.Builder()
+                    .setMaxStreams(5)
+                    .setAudioAttributes(audioAttributes)
+                    .build();
+
+        } else {
+            sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        }
 
 
-//        try{
-//            // Create objects of the 2 required classes
-//            AssetManager assetManager = context.getAssets();
-//            AssetFileDescriptor descriptor;
-//
-//            // Load our fx in memory ready for use
-//            descriptor = assetManager.openFd("beep1.ogg");
-//            beep1ID = sp.load(descriptor, 0);
-//
-//            descriptor = assetManager.openFd("beep2.ogg");
-//            beep2ID = sp.load(descriptor, 0);
-//
-//            descriptor = assetManager.openFd("beep3.ogg");
-//            beep3ID = sp.load(descriptor, 0);
-//
-//            descriptor = assetManager.openFd("loseLife.ogg");
-//            loseLifeID = sp.load(descriptor, 0);
-//
-//            descriptor = assetManager.openFd("explode.ogg");
-//            explodeID = sp.load(descriptor, 0);
-//
-//        }catch(IOException e){
-//            // Print an error message to the console
-//            Log.e("error", "failed to load sound files");
-//        }
+        try{
+            // Create objects of the 2 required classes
+            AssetManager assetManager = context.getAssets();
+            AssetFileDescriptor descriptor;
+
+            // Load our fx in memory ready for use
+            descriptor = assetManager.openFd("beep1.ogg");
+            beep1ID = sp.load(descriptor, 0);
+
+            descriptor = assetManager.openFd("beep2.ogg");
+            beep2ID = sp.load(descriptor, 0);
+
+            descriptor = assetManager.openFd("beep3.ogg");
+            beep3ID = sp.load(descriptor, 0);
+
+            descriptor = assetManager.openFd("loseLife.ogg");
+            loseLifeID = sp.load(descriptor, 0);
+
+            descriptor = assetManager.openFd("explode.ogg");
+            explodeID = sp.load(descriptor, 0);
+
+        }catch(IOException e){
+            // Print an error message to the console
+            Log.e("error", "failed to load sound files");
+        }
 
         setupAndRestart();
 
@@ -196,14 +203,14 @@ class PongView extends SurfaceView implements Runnable{
     // Movement, collision detection etc.
     public void update(){
 
-        //Check for bar colliding with barPlayer
+        //Check for ball colliding with barPlayer
         if(RectF.intersects(barPlayer.getRect(), ball.getRect())) {
             System.out.println("Intersection barplayer: " + barPlayer.getRect() + " - " + ball.getRect());
             ball.setRandomXVelocity();
             ball.reverseYVelocity();
             ball.clearObstacleY(barPlayer.getRect().bottom - 30);
 
-            //sp.play(beep1ID, 1, 1, 0, 0, 1);
+            sp.play(beep1ID, 1, 1, 0, 0, 1);
 
             predX = predict();
             moveComputer = true;
@@ -211,14 +218,14 @@ class PongView extends SurfaceView implements Runnable{
         }
 
 
-        //Check for bar colliding with barComputer
+        //Check for ball colliding with barComputer
         if(RectF.intersects(barComputer.getRect(), ball.getRect())) {
             System.out.println("Intersection barComputer: " + barComputer.getRect() + " - " + ball.getRect());
             ball.setRandomXVelocity();
             ball.reverseYVelocity();
             ball.clearObstacleY(barComputer.getRect().bottom + 30);
 
-            //sp.play(beep1ID, 1, 1, 0, 0, 1);
+            sp.play(beep1ID, 1, 1, 0, 0, 1);
             moveComputer = false;
             barComputer.setMovementState(barComputer.STOPPED);
             ball.increaseVelocity();
@@ -232,7 +239,7 @@ class PongView extends SurfaceView implements Runnable{
             moveComputer = false;
             barComputer.setMovementState(barComputer.STOPPED);
             reset();
-            //sp.play(loseLifeID, 1, 1, 0, 0, 1);
+            sp.play(loseLifeID, 1, 1, 0, 0, 1);
         }
 
         if (abs(barComputer.getRect().centerX() - predX) > 20 && moveComputer && ball.getRect().centerY() <= screenY/2) {
@@ -252,7 +259,7 @@ class PongView extends SurfaceView implements Runnable{
         if(ball.getRect().top < 0){
             score_player++;
             ball.reverseYVelocity();
-            //sp.play(beep3ID, 1, 1, 0, 0, 1);
+            sp.play(beep3ID, 1, 1, 0, 0, 1);
             moveComputer = false;
             barComputer.setMovementState(barComputer.STOPPED);
             reset();
@@ -263,7 +270,7 @@ class PongView extends SurfaceView implements Runnable{
             ball.reverseXVelocity();
             ball.clearObstacleX(2);
 
-            //sp.play(beep3ID, 1, 1, 0, 0, 1);
+            sp.play(beep3ID, 1, 1, 0, 0, 1);
         }
 
         // If the ball hits right wall bounce
@@ -271,10 +278,10 @@ class PongView extends SurfaceView implements Runnable{
             ball.reverseXVelocity();
             ball.clearObstacleX(screenX - 22);
 
-            //sp.play(beep3ID, 1, 1, 0, 0, 1);
+            sp.play(beep3ID, 1, 1, 0, 0, 1);
         }
 
-        // Move the barPlayer if required
+        // Move the barPlayer and barComputer if required
         barPlayer.update(fps);
         ball.update(fps);
         barComputer.update(fps*3);

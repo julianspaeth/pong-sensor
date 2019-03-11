@@ -54,7 +54,7 @@ public class Bar {
         if (position.equals("bottom")) {
             // Start barPlayer
             coordX = screenX/2f;
-            coordY = screenY - 150;
+            coordY = screenY - 100;
             rect = new RectF(coordX, coordY, coordX + length, coordY + height);
         }
         if (position.equals("top")) {
@@ -102,7 +102,7 @@ public class Bar {
         }
 
         // Make sure it's not leaving screen
-        if(rect.left < 5){ coordX = 0; } if(rect.right-5 > screenX){
+        if(rect.left < 5){ coordX = 5; } if(rect.right-5 > screenX){
             coordX = screenX -
                     // The width of the Bat
                     (rect.right - rect.left + 10);
