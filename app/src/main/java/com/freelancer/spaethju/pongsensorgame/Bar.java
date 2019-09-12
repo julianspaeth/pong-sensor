@@ -88,6 +88,18 @@ public class Bar {
         barMoving = state;
     }
 
+    public void moveLeft() {
+        barMoving = LEFT;
+    }
+
+    public void moveRight() {
+        barMoving = RIGHT;
+    }
+
+    public void hold() {
+        barMoving = STOPPED;
+    }
+
     // This update method will be called from update in PongView
     // It determines if the Bat needs to move and changes the coordinates
     // contained in rect if necessary

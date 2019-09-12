@@ -15,44 +15,23 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.UUID;
 
-public class ConnectActivity extends Activity {
+import static java.lang.Math.PI;
+import static java.lang.Math.atan2;
+import static java.lang.Math.round;
+import static java.lang.Math.sqrt;
 
-//    private BluetoothAdapter mBluetoothAdapter;
-//    private BluetoothSocket mSocket;
-//    private static UUID MY_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
-//    private static final String TAG = "BT";
-//    private final static int REQUEST_ENABLE_BT = 1;
-//    private String mac;
-//    private BluetoothDevice mDevice ;
-//    private BluetoothManager bluetoothManager;
-//    private BluetoothGatt gatt;
-//    private boolean mScanning;
-//    private Handler handler = new Handler();
-//    private static final int STATE_DISCONNECTED = 0;
-//    private static final int STATE_CONNECTING = 1;
-//    private static final int STATE_CONNECTED = 2;
-//    boolean enabled;
-//
-//    public final static String ACTION_GATT_CONNECTED =
-//            "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
-//    public final static String ACTION_GATT_DISCONNECTED =
-//            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
-//    public final static String ACTION_GATT_SERVICES_DISCOVERED =
-//            "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
-//    public final static String ACTION_DATA_AVAILABLE =
-//            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-//    public final static String EXTRA_DATA =
-//            "com.example.bluetooth.le.EXTRA_DATA";
-//    private int connectionState = STATE_DISCONNECTED;
+public class ConnectActivity extends Activity {
 
     private String mac = "";
     private BluetoothAdapter bluetoothAdapter;
     private int REQUEST_ENABLE_BT = 1;
     private Handler handler = new Handler();
     private String TAG = "BLE";
+    private Intent playIntent;
     private boolean mScanning;
     public static UUID UART_UUID   = UUID.fromString("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
     public static UUID TX_UUID   = UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E");
@@ -66,7 +45,7 @@ public class ConnectActivity extends Activity {
     public static UUID DIS_HWREV_UUID = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb");
     public static UUID DIS_SWREV_UUID = UUID.fromString("00002a28-0000-1000-8000-00805f9b34fb");
     private UUID[] uuids = new UUID[1];
-    private BluetoothGatt bluetoothGatt;
+    public static BluetoothGatt bluetoothGatt;
     private int connectionState = STATE_DISCONNECTED;
 
     private static final int STATE_DISCONNECTED = 0;
@@ -77,27 +56,22 @@ public class ConnectActivity extends Activity {
     private BluetoothGattCharacteristic tx;
     private BluetoothGattCharacteristic rx;
 
+    private Toast deviceNotFoundToast;
+    private int numberSend = 0;
+
+
+    private int origPitch, origRoll;
+    private Boolean calibrated = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_connect);
         mac = getIntent().getStringExtra("MAC");
         uuids[0] = UART_UUID;
         setUpBle();
         findBleDevices();
 
-//
-//        bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-//        mBluetoothAdapter = bluetoothManager.getAdapter();
-//        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-//            Intent enableBtIntent =
-//                    new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-//            Log.e(TAG, "BT not enabled");
-//        }
-//
-//        scanLeDevice(true);
-
+        deviceNotFoundToast = Toast.makeText(getApplicationContext(), "NO device found with this MAC Address.", Toast.LENGTH_SHORT);
 
     }
 
@@ -128,6 +102,7 @@ public class ConnectActivity extends Activity {
                     bluetoothAdapter.stopLeScan(leScanCallback);
                     if (!connected) {
                         Log.i(TAG, "Device not found");
+                        deviceNotFoundToast.show();
                         Intent startIntent = new Intent(getApplicationContext(), StartActivity.class);
                         startActivity(startIntent);
                     }
@@ -180,6 +155,8 @@ public class ConnectActivity extends Activity {
                         connectionState = STATE_CONNECTED;
                         Log.i(TAG, "Connected to GATT server.");
                         gatt.discoverServices();
+                        playIntent = new Intent(getApplicationContext(), PlayActivity.class);
+                        startActivity(playIntent);
 
                     } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                         connectionState = STATE_DISCONNECTED;
@@ -218,7 +195,6 @@ public class ConnectActivity extends Activity {
                         // Stop if the client descriptor could not be written.
                         Log.e(TAG, "Enable notification descriptor write failed.");
                     }
-
                 }
 
 
@@ -227,19 +203,64 @@ public class ConnectActivity extends Activity {
                 public void onCharacteristicChanged(BluetoothGatt gatt,
                                                     BluetoothGattCharacteristic characteristic) {
                     super.onCharacteristicChanged(gatt, characteristic);
-                    byte[] byte_array = characteristic.getValue();
-                    double[] data = toDouble(toInt(byte_array));
+                    byte[] data = characteristic.getValue();
+                    //double[] data = toDouble(toInt(byte_array));
+
+                    int x = (data[0] * 256 + data[1]) - 32768;
+                    int y = (data[2] * 256 + data[3]) - 32768;
+                    int z = (data[4] * 256 + data[5]) - 32768;
+
+                    int pitch = (int) round(atan2(-z, y)/PI * 180 + 90);
+                    int roll = (int) round(atan2(-x, sqrt(z * z + y * y))/PI * 180);
+
+                    if (!calibrated) {
+                        origPitch = pitch;
+                        origRoll = roll;
+                        calibrated = true;
+                    } else {
+                        //System.out.println(origPitch);
+                        //System.out.println(origRoll);
+                        int pitchDiff = pitch - origPitch;
+                        System.out.println(pitchDiff);
+                        if (pitchDiff <= -10) {
+                            PlayActivity.pongView.getBarPlayer().moveLeft();
+                        } else if (pitchDiff >= 10) {
+                            PlayActivity.pongView.getBarPlayer().moveRight();
+                        } else {
+                            PlayActivity.pongView.getBarPlayer().hold();
+                        }
+                        //if (pitch-origPitch > 2) {
+                        //    PlayActivity.pongView.getBarPlayer().moveRight();
+                        //} else if (pitch-origPitch < 2) {
+                        //    PlayActivity.pongView.getBarPlayer().moveLeft();
+                        //}
+
+                    }
+
+                    //float pitch = 180 * atan(x/sqrt(y*y + z*z))/Math.PI;
+                    //float roll = 180 * atan(y/sqrt(x*x + z*z))/Math.PI;
+
+                    //System.out.println(pitch + " " +  roll);
+
+                    // calculations, to get angles from the data from the board
+                    //double x = (data[0] * 256 + data[1]) - 32768;
+                    //double y = (data[2] * 256 + data[3]) - 32768;
+                    //double z = (data[4] * 256 + data[5]) - 32768;
+
+                    // accelerationX = (signed int)(((signed int)rawData_X) * 3.9);
+                    // accelerationY = (signed int)(((signed int)rawData_Y) * 3.9);
+                    // accelerationZ = (signed int)(((signed int)rawData_Z) * 3.9);
+                    //double orig_pitch = 180 * atan(x1/sqrt(y1*y1 + z1*z1))/Math.PI;
+                    //double orig_roll = 180 * atan(y1/sqrt(x1*x1 + z1*z1))/Math.PI;
 
 
-                    double x = data[0];
-                    double y = data[2];
-                    double z = data[4];
 
-//                    double pitch = (atan2(-z, y));
-//                    double pitch = Math.atan2(Math.sqrt(dZ * dZ + dX * dX), dY) + Math.PI;
-//                    double roll = atan2(-x, Math.sqrt(z * z + y * y)));
-//                    System.out.println(pitch);
-//                    System.out.println(roll);
+
+
+                    //if index == 1 { // if the data comes from board 1
+                    //   counterData1 = counterData1 + 1
+                    //   pitch1 = Float(round(atan2(-z, y)/Double.pi * 180 + 90))
+                    //    roll1 = Float(round(atan2(-x, sqrt(z * z + y * y))/Double.pi * 180))
                 }
             };
 
@@ -268,6 +289,7 @@ public class ConnectActivity extends Activity {
         bluetoothGatt.close();
         bluetoothGatt = null;
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

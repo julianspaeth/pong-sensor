@@ -8,7 +8,7 @@ import android.view.Display;
 
 public class PlayActivity extends Activity {
 
-    private PongView pongView;
+    public static PongView pongView;
     private static final String TAG = "Play";
 
 
@@ -47,5 +47,9 @@ public class PlayActivity extends Activity {
         Log.i(TAG, "Pause game");
         // Tell the pongView pause method to execute
         pongView.pause();
+    }
+
+    public PongView getPongView() {
+        return pongView;
     }
 }

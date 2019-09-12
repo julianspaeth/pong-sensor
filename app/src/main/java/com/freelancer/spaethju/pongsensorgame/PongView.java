@@ -412,4 +412,8 @@ class PongView extends SurfaceView implements Runnable{
         }
         return true;
     }
+
+    public Bar getBarPlayer() {
+        return barPlayer;
+    }
 }
