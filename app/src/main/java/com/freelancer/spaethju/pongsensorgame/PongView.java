@@ -91,8 +91,8 @@ class PongView extends SurfaceView implements Runnable{
         paint = new Paint();
 
         // A new bat
-        barPlayer = new Bar(screenX, screenY, "bottom");
-        barComputer = new Bar(screenX, screenY, "top");
+        barPlayer = new Bar(screenX, screenY, "bottom", "player");
+        barComputer = new Bar(screenX, screenY, "top", "computer");
 
         // Create a ball
         ball = new Ball(screenX, screenY);
@@ -227,7 +227,7 @@ class PongView extends SurfaceView implements Runnable{
 
             sp.play(beep1ID, 1, 1, 0, 0, 1);
             moveComputer = false;
-            barComputer.setMovementState(barComputer.STOPPED);
+            barComputer.setHorizontalMovementState(barComputer.STOPPED_HORIZONTAL);
             ball.increaseVelocity();
         }
 
@@ -237,7 +237,7 @@ class PongView extends SurfaceView implements Runnable{
         if(ball.getRect().bottom > screenY){
             score_computer++;
             moveComputer = false;
-            barComputer.setMovementState(barComputer.STOPPED);
+            barComputer.setHorizontalMovementState(barComputer.STOPPED_HORIZONTAL);
             reset();
             sp.play(loseLifeID, 1, 1, 0, 0, 1);
         }
@@ -245,13 +245,13 @@ class PongView extends SurfaceView implements Runnable{
         if (abs(barComputer.getRect().centerX() - predX) > 20 && moveComputer && ball.getRect().centerY() <= screenY/2) {
             // Move when it goes into the computer direction
             if (predX < barComputer.getRect().centerX()+20){
-                barComputer.setMovementState(barComputer.LEFT);
+                barComputer.setHorizontalMovementState(barComputer.LEFT);
             }
             if (predX > barComputer.getRect().centerX()-20){
-                barComputer.setMovementState(barComputer.RIGHT);
+                barComputer.setHorizontalMovementState(barComputer.RIGHT);
             }
         } else {
-            barComputer.setMovementState(barComputer.STOPPED);
+            barComputer.setHorizontalMovementState(barComputer.STOPPED_HORIZONTAL);
         }
 
 
@@ -261,7 +261,7 @@ class PongView extends SurfaceView implements Runnable{
             ball.reverseYVelocity();
             sp.play(beep3ID, 1, 1, 0, 0, 1);
             moveComputer = false;
-            barComputer.setMovementState(barComputer.STOPPED);
+            barComputer.setHorizontalMovementState(barComputer.STOPPED_HORIZONTAL);
             reset();
         }
 
@@ -396,10 +396,18 @@ class PongView extends SurfaceView implements Runnable{
 
                 // Is the touch on the right or left?
                 if(motionEvent.getX() > screenX / 2){
-                    barPlayer.setMovementState(barPlayer.RIGHT);
+                    barPlayer.setHorizontalMovementState(barPlayer.RIGHT);
                 }
                 else{
-                    barPlayer.setMovementState(barPlayer.LEFT);
+                    barPlayer.setHorizontalMovementState(barPlayer.LEFT);
+                }
+
+                // Is the touch on the upper or bottom?
+                if(motionEvent.getY() > screenY / 2){
+                    barPlayer.setVerticalMovementState(barPlayer.UP);
+                }
+                else{
+                    barPlayer.setVerticalMovementState(barPlayer.DOWN);
                 }
 
                 break;
@@ -407,7 +415,8 @@ class PongView extends SurfaceView implements Runnable{
             // Player has removed finger from screen
             case MotionEvent.ACTION_UP:
 
-                barPlayer.setMovementState(barPlayer.STOPPED);
+                barPlayer.setHorizontalMovementState(barPlayer.STOPPED_HORIZONTAL);
+                barPlayer.setVerticalMovementState(barPlayer.STOPPED_VERTICAL);
                 break;
         }
         return true;

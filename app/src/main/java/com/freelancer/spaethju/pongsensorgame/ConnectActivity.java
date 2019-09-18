@@ -204,36 +204,55 @@ public class ConnectActivity extends Activity {
                                                     BluetoothGattCharacteristic characteristic) {
                     super.onCharacteristicChanged(gatt, characteristic);
                     byte[] data = characteristic.getValue();
-                    //double[] data = toDouble(toInt(byte_array));
 
+                    /**
+                     * The data is retrieved here
+                     */
                     int x = (data[0] * 256 + data[1]) - 32768;
                     int y = (data[2] * 256 + data[3]) - 32768;
                     int z = (data[4] * 256 + data[5]) - 32768;
 
+
+                    //TODO CHECK pitch and roll
                     int pitch = (int) round(atan2(-z, y)/PI * 180 + 90);
                     int roll = (int) round(atan2(-x, sqrt(z * z + y * y))/PI * 180);
 
+                    int pitchDiff = 0;
+                    int rollDiff = 0;
+
+                    //TODO Let pitch and roll differences apply to the following methods:
+                    // PlayActivity.pongView.getBarPlayer().moveLeft();
+                    // PlayActivity.pongView.getBarPlayer().moveRight();
+                    // PlayActivity.pongView.getBarPlayer().moveUp();
+                    // PlayActivity.pongView.getBarPlayer().moveDown();
+                    // PlayActivity.pongView.getBarPlayer().holdHorizontal();
+                    // PlayActivity.pongView.getBarPlayer().holdVertical();
                     if (!calibrated) {
                         origPitch = pitch;
                         origRoll = roll;
                         calibrated = true;
                     } else {
-                        //System.out.println(origPitch);
-                        //System.out.println(origRoll);
-                        int pitchDiff = pitch - origPitch;
+                        pitchDiff = pitch - origPitch;
+                        rollDiff = roll - origRoll;
+                        System.out.println("");
                         System.out.println(pitchDiff);
+                        System.out.println(rollDiff);
                         if (pitchDiff <= -10) {
-                            PlayActivity.pongView.getBarPlayer().moveLeft();
+                            //PlayActivity.pongView.getBarPlayer().moveLeft();
                         } else if (pitchDiff >= 10) {
-                            PlayActivity.pongView.getBarPlayer().moveRight();
+                            //PlayActivity.pongView.getBarPlayer().moveRight();
                         } else {
-                            PlayActivity.pongView.getBarPlayer().hold();
+                            //PlayActivity.pongView.getBarPlayer().holdHorizontal();
                         }
-                        //if (pitch-origPitch > 2) {
-                        //    PlayActivity.pongView.getBarPlayer().moveRight();
-                        //} else if (pitch-origPitch < 2) {
-                        //    PlayActivity.pongView.getBarPlayer().moveLeft();
-                        //}
+
+                        if (rollDiff <= -10) {
+                            //PlayActivity.pongView.getBarPlayer().moveDown();
+                        } else if (rollDiff >= 10) {
+                            //PlayActivity.pongView.getBarPlayer().moveRight();
+                        } else {
+                            //PlayActivity.pongView.getBarPlayer().holdVertical();
+                        }
+
 
                     }
 
