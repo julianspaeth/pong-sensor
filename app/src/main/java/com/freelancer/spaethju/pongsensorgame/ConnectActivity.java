@@ -75,6 +75,10 @@ public class ConnectActivity extends Activity {
 
     }
 
+    /**
+     * This methods sets up the bluetooth connection. It checks if an adapter is available and activates it
+     */
+
     private void setUpBle() {
         Log.i(TAG, "Set up BLE");
         final BluetoothManager bluetoothManager =
@@ -90,6 +94,10 @@ public class ConnectActivity extends Activity {
     }
 
     private static final long SCAN_PERIOD = 5000;
+
+    /**
+     * This method finds Ble Devices and connects to the Device
+     */
     private void findBleDevices() {
         Log.i(TAG, "Find BLE devices");
         connected = false;
@@ -199,6 +207,10 @@ public class ConnectActivity extends Activity {
 
 
                 @Override
+
+                /**
+                 * This method receives the data from the sensor and processes it
+                 */
                 // Characteristic notification
                 public void onCharacteristicChanged(BluetoothGatt gatt,
                                                     BluetoothGattCharacteristic characteristic) {
@@ -227,6 +239,10 @@ public class ConnectActivity extends Activity {
                     // PlayActivity.pongView.getBarPlayer().moveDown();
                     // PlayActivity.pongView.getBarPlayer().holdHorizontal();
                     // PlayActivity.pongView.getBarPlayer().holdVertical();
+                    //
+                    //TODO if that works deactivate the touch control in PongView.java in the
+                    // onTouchEvent method (or keep it to allow both)
+
                     if (!calibrated) {
                         origPitch = pitch;
                         origRoll = roll;
