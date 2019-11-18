@@ -1,1 +1,1 @@
-# frauenhofer-pong
+# pong-sensor game 
